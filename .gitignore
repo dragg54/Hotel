@@ -1,0 +1,10 @@
+bin/
+obj/
+out/
+
+.vscode/
+.idea/
+
+wwwroot/
+
+appsettings.Development.json
