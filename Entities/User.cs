@@ -2,21 +2,16 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
 using Hotel_Management_API.Enums;
+using Microsoft.AspNetCore.Identity;
 
 namespace Hotel_Management_API.Entities
 {
-    public class User: BaseEntity
+    public class User: IdentityUser
     {
-        [Key]
-        public long Id { get; set; }
-
-        [Required]
         public Role Role { get; set; }
 
-        [Required]
-        public string Email { get; set; }
+        public string FirstName { get; set; }    
 
-        [Required]
-        public string Password { get; set; }
+        public string LastName { get; set; }    
     }
 }

@@ -4,7 +4,6 @@ namespace Hotel_Management_API.Enums
     {
         Standard,
         Deluxe,
-        Suite,
-        
+        Suite
     }
 }

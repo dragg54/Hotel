@@ -1,10 +1,11 @@
 ﻿using Hotel_Management_API.Entities;
 using Hotel_Management_API.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Hotel_Management_API.Data.DBContexts
 {
-    public class HotelDBContext: DbContext
+    public class HotelDBContext: IdentityDbContext<User>
     {
         public HotelDBContext(DbContextOptions<HotelDBContext> options): base(options)
         {

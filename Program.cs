@@ -7,6 +7,12 @@ using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Hotel_Management_API.Services;
+using Hotel_Management_API.Entities;
+using Microsoft.AspNetCore.Identity;
+using Hotel_Management_API.Bootstrapper.Configurations;
+using Hotel_Management_API.Middlewares;
+using Hotel_Management_API.Responses;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,11 +23,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var app = builder.Build();
-
 //jwt
-var jwtIssuer = builder.Configuration.GetSection("JWTSettings:Issuer").Get<string>();
-var jwtKey = builder.Configuration.GetSection("JWTSettings:Key").Get<string>();
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
+
+var jwtIssuer = builder.Configuration.GetSection("JwtSettings:Issuer").Get<string>();
+var jwtKey = builder.Configuration.GetSection("JwtSettings:SecretKey").Get<string>();
 
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -38,7 +44,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
          IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
      };
  });
-//end of jwt 
+//end of jwt
+
+builder.Services.AddIdentity<User, IdentityRole>()
+       .AddEntityFrameworkStores<HotelDBContext>();
+
+builder.Services.AddScoped<RoleManager<IdentityRole>>();
 
 builder.Configuration.AddJsonFile("appsettings.json");
 builder.Configuration.AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true);
@@ -49,32 +60,34 @@ Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
     .CreateLogger();
 
-//Inject services    
-//builder.Services.AddScoped<IEmployeeService, EmployeeService>();
-//builder.Services.AddHttpClient<IPositionClient, PositionClient>();
-//builder.Services.AddHttpClient<IIdentityClient, IdentityClient>();
 
 builder.Services.AddDbContext<HotelDBContext>(options =>
 {
     Log.Information($"Using {builder.Environment.EnvironmentName} DB");
     var connectionString = builder.Configuration.GetConnectionString("DbConnection");
-    //if (builder.Environment.IsDevelopment())
-    //{
+    if (builder.Environment.IsDevelopment())
+    {
         options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
-    //}
-    //else
-    //{
-    //    connectionString = builder.Configuration.GetConnectionString("SQLConnection");
-    //    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
-    //}
+    }
+    else
+    {
+       connectionString = builder.Configuration.GetConnectionString("SQLConnection");
+       options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+    }
 });
 
+//Inject services    
+builder.Services.AddScoped<IResponseHandler, ResponseHandler>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+
+var app = builder.Build();
+
+
 app.UseSwagger();
-app.UseSwaggerUI();
-app.UseAuthorization();
+app.UseSwaggerUI();    
 app.MapControllers();
-app.UseAuthentication();    
-//app.UseMiddleware<ErrorHandlingMiddleware>();
+app.UseMiddleware<GlobalExceptionHandler>();
 
 //if (builder.Environment.IsProduction())
 //{
@@ -95,6 +108,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.UseAuthentication();
 
 app.MapControllers();
 
