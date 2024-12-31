@@ -64,7 +64,7 @@ namespace Hotel_Management_API.Services
             }
             await userManager.AddToRoleAsync(user, request.Role.ToString());
             await userManager.UpdateAsync(user);
-            var jwtToken = this.tokenService.GenerateToken(user.Id);
+            var jwtToken = await this.tokenService.GenerateToken(user);
             return new AuthResource
             {
                 Email = request.Email,
@@ -72,6 +72,7 @@ namespace Hotel_Management_API.Services
                 Roles = new List<string> { request.Role.ToString() },
                 Message = "Registration successful",
                 IsAuthenticated = true,
+                ExpiresOn = tokenService.GetTokenExpirationTime(jwtToken)
             };
         }
 
@@ -80,16 +81,17 @@ namespace Hotel_Management_API.Services
             var user = await userManager.FindByEmailAsync(request.Email);
             if (user is null || !await userManager.CheckPasswordAsync(user, request.Password))
                 throw new UnauthorizedAccessException("Email or Password is incorrect!");
-            var jwtSecurityToken = tokenService.GenerateToken(user.Id);
+            var jwtSecurityToken = await tokenService.GenerateToken(user);
             var rolesList = await userManager.GetRolesAsync(user);
-
+            
             return new AuthResource
             {
                 Email = request.Email,
                 Token = jwtSecurityToken,
                 Roles = rolesList.ToList(),
-                Message = "Registration successful",
+                Message = "Login successful",
                 IsAuthenticated = true,
+                ExpiresOn = tokenService.GetTokenExpirationTime(jwtSecurityToken)
             };
         }
     }

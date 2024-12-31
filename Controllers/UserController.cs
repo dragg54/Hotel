@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Hotel_Management_API.DTOs.Requests;
+using Hotel_Management_API.DTOs.Resources;
 using Hotel_Management_API.Responses;
 using Hotel_Management_API.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -22,6 +23,9 @@ namespace Hotel_Management_API.Controllers
         }
 
         [HttpPost]
+         [ProducesResponseType(StatusCodes.Status201Created, Type=typeof(AuthResource))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> RegisterAsync([FromBody] PostUserRequest request)
         {
             var result = await _userService.ProcessPostUserRequest(request);
@@ -35,6 +39,9 @@ namespace Hotel_Management_API.Controllers
 
         
         [HttpPost("login")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type=typeof(AuthResource))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Login([FromBody] LoginUserRequest request)
         {
             var result = await _userService.ProcessLoginRequest(request);
