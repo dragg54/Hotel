@@ -60,9 +60,9 @@ namespace Hotel_Management_API.Migrations
 
             modelBuilder.Entity("Hotel_Management_API.Entities.Owner", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
@@ -160,10 +160,6 @@ namespace Hotel_Management_API.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("varchar(256)");
 
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
                     b.Property<string>("PasswordHash")
                         .HasColumnType("longtext");
 
@@ -218,8 +214,8 @@ namespace Hotel_Management_API.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int?>("OwnerId")
-                        .HasColumnType("int");
+                    b.Property<long>("OwnerId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("PostalCode")
                         .HasColumnType("longtext");
@@ -398,7 +394,9 @@ namespace Hotel_Management_API.Migrations
                 {
                     b.HasOne("Hotel_Management_API.Entities.Owner", "Owner")
                         .WithMany("Hotels")
-                        .HasForeignKey("OwnerId");
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Owner");
                 });

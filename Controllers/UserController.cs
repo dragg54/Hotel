@@ -26,7 +26,7 @@ namespace Hotel_Management_API.Controllers
          [ProducesResponseType(StatusCodes.Status201Created, Type=typeof(AuthResource))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> RegisterAsync([FromBody] PostUserRequest request)
+        public async Task<IActionResult> Register([FromBody] PostUserRequest request)
         {
             var result = await _userService.ProcessPostUserRequest(request);
 

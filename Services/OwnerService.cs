@@ -27,7 +27,8 @@ namespace Hotel_Management_API.Services
 
         public async Task<OwnerResource> GetOwnerAsync(long id)
         {
-            var owner = await dBContext.Owners.FirstOrDefaultAsync(x => x.Id == id);
+            var owner = await dBContext.Owners.FirstOrDefaultAsync(x => x.Id == id)
+                         ?? throw new NotFoundException("Owner not found");
             return owner.ToOwnerResource();
         }
 
@@ -44,9 +45,9 @@ namespace Hotel_Management_API.Services
             return newOwner.ToOwnerResource();
         }
 
-        public async Task<OwnerResource> UpdateOwnerAsync(long id, PutOwnerRequest request)
+        public async Task<OwnerResource> ProcessPutOwnerRequest(long id, PutOwnerRequest request)
         {
-            var existingOwner = await dBContext.Owners.FirstOrDefaultAsync(x => x.Id == id) 
+            var existingOwner = await dBContext.Owners.FirstOrDefaultAsync(x => x.Id == id && x.Email == request.Email) 
                                 ?? throw new BadRequestException($"Update owner failed: Owner does not exist");
             request.UpdateOwner(existingOwner);
             await dBContext.SaveChangesAsync();

@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Hotel_Management_API.DTOs.Requests;
 using Hotel_Management_API.DTOs.Resources;
 using Hotel_Management_API.Responses;
@@ -8,74 +12,67 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Hotel_Management_API.Controllers
 {
-    [Route("api/owners")]
     [ApiController]
-    public class OwnerController : ControllerBase
+    [Route("api/hotels")]
+    public class HotelController : ControllerBase
     {
-        private readonly IOwnerService _ownerService;
+        private readonly IHotelService _hotelService;
         private readonly IResponseHandler _responseHandler;
-        public OwnerController(IOwnerService OwnerService, IResponseHandler responseHandler)
+        public HotelController(IHotelService hotelService, IResponseHandler responseHandler)
         {
-            _ownerService = OwnerService;
+            _hotelService = hotelService;
             _responseHandler = responseHandler;
         }
 
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(OwnerResource))]
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(HotelResource))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<IActionResult> PostOwner([FromBody] PostOwnerRequest request)
+        public async Task<IActionResult> PostHotelAsync([FromBody] PostHotelRequest request)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            var result = await _ownerService.ProcessPostOwnerRequest(request);
-            return _responseHandler.Created(result, "Owner created successful");
+            var result = await _hotelService.ProcessPostHotelRequest(request);
+            return _responseHandler.Created(result, "Hotel created successful");
         }
 
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(OwnerResource))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(HotelResource))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetOwners()
+        public async Task<IActionResult> GetHotels()
         {
-            var result = await _ownerService.GetAllOwnersAsync();
+            var result = await _hotelService.GetHotelsAsync();
             return _responseHandler.Success(result);
-
         }
 
         [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(OwnerResource))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(HotelResource))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetOwner(long id)
+        public async Task<IActionResult> GetHotel(long id)
         {
-            var result = await _ownerService.GetOwnerAsync(id);
+            var result = await _hotelService.GetHotelAsync(id);
             return _responseHandler.Success(result);
-
         }
 
         [HttpPut("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(OwnerResource))]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(HotelResource))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<IActionResult> PutOwnerAsync(long id, [FromBody] PutOwnerRequest request)
+        public async Task<IActionResult> PutHotel(long id, [FromBody] PutHotelRequest request)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            var result = await _ownerService.ProcessPutOwnerRequest(id, request);
-            return _responseHandler.Success(result, "Owner updated successful");
+            var result = await _hotelService.ProcessPutHotelRequest(request, id);
+            return _responseHandler.Success(result);
         }
     }
 }

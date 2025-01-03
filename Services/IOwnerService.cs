@@ -11,7 +11,7 @@ namespace Hotel_Management_API.Services
     {
         Task<OwnerResource> ProcessPostOwnerRequest(PostOwnerRequest request);
         Task<OwnerResource> GetOwnerAsync(long id);
-        Task<OwnerResource> UpdateOwnerAsync(long id, PutOwnerRequest request);  
+        Task<OwnerResource> ProcessPutOwnerRequest(long id, PutOwnerRequest request);  
         Task<List<OwnerResource>> GetAllOwnersAsync();
     }
 }

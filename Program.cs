@@ -163,6 +163,7 @@ builder.Services.AddScoped<IResponseHandler, ResponseHandler>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IOwnerService, OwnerService>();
+builder.Services.AddScoped<IHotelService, HotelService>();
 
 var app = builder.Build();
 
@@ -180,13 +181,6 @@ app.UseMiddleware<GlobalExceptionHandler>();
 
 //}
 
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
 
 
 app.UseHttpsRedirection();
